@@ -1,0 +1,3 @@
+* Use stdbool bool instead of int or a custom boolean type
+* All types and functions that are a part of the api begin with 'e0_'
+* xmalloc should be used everywhere that an out-of-memory error is bad

@@ -1,0 +1,8 @@
+matrices:
+	* Model Matrix brings model from local space, where its vertices are relative
+	to its own origin, to world space, where its vertices are relative to the
+	whole world's origin.
+	* View Matrix moves models to a position based on the position and angles
+	of the camera viewing the world.
+	* Projection Matrix moves the vertices of models based on details about the
+	camera - fov, aspect ratio, etc. - to make it look realistically 3d.
