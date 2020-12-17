@@ -15,7 +15,7 @@ typedef struct {
  *                GL_RED_INTEGER, GL_RG_INTEGER, GL_RGB_INTEGER, GL_BGR_INTEGER,
  *                GL_RGBA_INTEGER, GL_BGRA_INTEGER, GL_STENCIL_INDEX,
  *                GL_DEPTH_COMPONENT, GL_DEPTH_STENCIL
- * @return        A texture object or NULL on error (get error with error_get())
+ * @return        A texture object or NULL on error (get error with e0_getError())
  */
 e0_texture *e0_createTexture(const char *path, GLenum format);
 

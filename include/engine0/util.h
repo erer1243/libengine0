@@ -15,20 +15,20 @@ void die(const char *message);
  * @param fmt Format string
  * @param ... Format arguments
  */
-void eprintf(const char *fmt, ...);
+// void eprintf(const char *fmt, ...);
 
 /**
  * Prints like puts to stderr. Equivalent to fprintf(stderr, "%s\n", s).
  * @param s String to be printed
  */
-void eputs(const char *s);
+// void eputs(const char *s);
 
 /**
  * Duplicates a string onto the heap.
  * @param  s String to be duped
  * @return   The new string
  */
-char *strdup(const char *s);
+// char *strdup(const char *s);
 
 /**
  * Identical to strdup but with GLchar.
@@ -43,6 +43,6 @@ GLchar *strdup_GLchar(const GLchar *s);
  * @param  ... Format arguments
  * @return     The new string or NULL if allocation failed
  */
-char *strdupf(const char *fmt, ...);
+// char *strdupf(const char *fmt, ...);
 
 #endif

@@ -8,11 +8,13 @@
 #include "engine0/error.h"
 #include "engine0/xmalloc.h"
 #include "engine0/util.h"
+#include "engine0/global_object_array.h"
 
 /* Currently the uniform map size is a constant, never rehashing. It seems
    reasonable because how many uniforms are you going to have for one shader? */
 static const size_t uniform_map_size = 10;
 
+// Reads an entire file into a heap-allocated buffer.
 static char *read_whole_file(const char *path)
 {
 	FILE *f = fopen(path, "r");
@@ -31,6 +33,7 @@ static char *read_whole_file(const char *path)
 	return str;
 }
 
+// Basic hash function sourced from http://www.cse.yorku.ca/~oz/hash.html
 static size_t djb2(const char *str)
 {
 	size_t hash = 5381;
@@ -39,6 +42,7 @@ static size_t djb2(const char *str)
 	return hash;
 }
 
+// Initializes the uniform_map field of a shader object.
 static void init_uniform_map(e0_shader *s)
 {
 	s->uniform_map.size = uniform_map_size;
@@ -49,6 +53,7 @@ static void init_uniform_map(e0_shader *s)
 		s->uniform_map.nodes[i] = NULL;
 }
 
+// Returns a new heap-allocated uniform map node for the given uniform name and location
 static e0_uniformMapNode *new_map_node(const GLchar *name, GLint location)
 {
 	e0_uniformMapNode *node = xmalloc(sizeof(e0_uniformMapNode));
@@ -58,19 +63,25 @@ static e0_uniformMapNode *new_map_node(const GLchar *name, GLint location)
 	return node;
 }
 
+// Frees memory associated with a uniform map node
 static void destroy_map_node(e0_uniformMapNode *node)
 {
 	free(node->name);
 	free(node);
 }
 
+/* Checks the uniform map of the given shader object, looking for its location. Adds a new entry
+   if the uniform has not been used before. */
 static GLint uniform_location(e0_shader *s, const GLchar *name)
 {
+	// Hash the uniform's name into an index
 	size_t i = djb2(name) % s->uniform_map.size;
 
+	// Walk through the linked list at the given index, looking for a matching uniform name
 	e0_uniformMapNode *prev = NULL,
-	                 *curr = s->uniform_map.nodes[i];
+	                  *curr = s->uniform_map.nodes[i];
 	while (curr) {
+		// If a match was found, return the location
 		if (strcmp(name, curr->name) == 0)
 			return curr->location;
 
@@ -78,9 +89,11 @@ static GLint uniform_location(e0_shader *s, const GLchar *name)
 		curr = curr->next;
 	}
 
+	// Since no match was found, create a new node
 	e0_uniformMapNode *new_node =
 		new_map_node(name,  glGetUniformLocation(s->program, name));
 
+	// And add the new node to the list
 	if (prev)
 		prev->next = new_node;
 	else
@@ -95,12 +108,12 @@ e0_shader *e0_createShaderFromPath(const char *vert_shader_path,
 	// Read sources
 	char *vert_shader_src, *frag_shader_src;
 	if ((vert_shader_src = read_whole_file(vert_shader_path)) == NULL) {
-		e0_setError("Reading vertex shader: %s", strerror(errno));
+		e0_setError("Reading vertex shader \"%s\": %s", vert_shader_path, strerror(errno));
 		return NULL;
 	}
 
 	if ((frag_shader_src = read_whole_file(frag_shader_path)) == NULL) {
-		e0_setError("Reading fragment shader: %s", strerror(errno));
+		e0_setError("Reading fragment shader \"%s\": %s", frag_shader_path, strerror(errno));
 		return NULL;
 	}
 
@@ -110,6 +123,9 @@ e0_shader *e0_createShaderFromPath(const char *vert_shader_path,
 	// Cleanup and free
 	free(vert_shader_src);
 	free(frag_shader_src);
+
+	// Don't append to GOA because that's done in e0_createShaderFromSrc
+
 	return s;
 }
 
@@ -174,6 +190,10 @@ e0_shader *e0_createShaderFromSrc(const GLchar *vert_shader_src,
 	e0_shader *s = xmalloc(sizeof(e0_shader));
 	s->program = shader_program;
 	init_uniform_map(s);
+
+	// Append shader to global object array
+	append_object_GOA(s, SHADER);
+
 	return s;
 }
 
@@ -191,6 +211,8 @@ void e0_destroyShader(e0_shader *s)
 		}
 	}
 	free(s->uniform_map.nodes);
+
+	remove_object_GOA(s);
 
 	free(s);
 }

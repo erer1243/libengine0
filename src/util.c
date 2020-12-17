@@ -11,10 +11,19 @@
 
 void die(const char *message)
 {
-	eputs(message);
+	fprintf(stderr, "%s\n", message);
 	exit(EXIT_FAILURE);
 }
 
+GLchar *strdup_GLchar(const GLchar *s)
+{
+	size_t len = strlen(s) + 1;
+	GLchar *new = xmalloc(len * sizeof(GLchar));
+	memcpy(new, s, len);
+	return new;
+}
+
+/*
 void eprintf(const char *fmt, ...)
 {
 	va_list args;
@@ -36,14 +45,6 @@ char *strdup(const char *s)
 	return new;
 }
 
-GLchar *strdup_GLchar(const GLchar *s)
-{
-	size_t len = strlen(s) + 1;
-	GLchar *new = xmalloc(len * sizeof(GLchar));
-	memcpy(new, s, len);
-	return new;
-}
-
 char *strdupf(const char *fmt, ...)
 {
 	va_list args1, args2;
@@ -58,3 +59,4 @@ char *strdupf(const char *fmt, ...)
 	va_end(args2);
 	return new;
 }
+*/

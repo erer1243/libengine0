@@ -14,7 +14,6 @@ OBJS := obj/glad.o $(patsubst src/%.c, obj/%.o, $(wildcard src/*.c))
 
 .PHONY: all dynamic-lib clean lint doc tests
 
-all: $(OBJS)
 dynamic-lib: $(DYNAMIC_LIB)
 
 $(DYNAMIC_LIB): $(OBJS)
@@ -29,7 +28,7 @@ obj/glad.o: ../contrib/glad/src/glad.c
 	$(CC) $< -o $@ $(CFLAGS) -Wno-pedantic -c
 
 lint:
-	cppcheck src/
+	cppcheck --enable=all src/
 
 clean:
 	$(RM) -r obj/* doc/* tests/obj/*

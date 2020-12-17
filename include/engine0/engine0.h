@@ -10,9 +10,15 @@
 #include "engine0/shader.h"
 #include "engine0/texture.h"
 
-/* Excluded: util.h xmalloc.h */
+/* Excluded: util.h xmalloc.h global_object_array.h */
 
-extern unsigned int window_width, window_height;
+/**
+ * Global variables meant to be read only. Updated by internal processes,
+ * never read from by e0.
+ */
+extern struct e0_globals {
+	unsigned int window_width, window_height;
+} e0_globals;
 
 /**
  * Initializes a window and OpenGL context for it with given parameters.
@@ -35,27 +41,32 @@ void e0_terminate();
  * Show window if it was previously hidden.
  */
 void e0_showWindow();
+
 /**
  * Must be run every single frame. Swaps frame buffer and polls for window
  * events
  */
-void e0_loopWindow();
+void e0_draw();
+
 /**
  * Checks if the window should close (i.e. it has been X-ed out).
  * @return true if the window should close, false if not
  */
 bool e0_windowShouldClose();
+
 /**
  * Check if a key is being pressed for the current frame
  * @param  keycode key to check
  * @return         true if pressed, false if not
  */
 bool e0_keyPressed(int keycode);
+
 /**
  * Sets whether vsync should be enabled or not. Default is true.
  * @param vsync_on true to enable, false to disable
  */
 void e0_setVsync(bool vsync_on);
+
 /**
  * Get the number of seconds since library was initialized.
  * @return Seconds since library was initialzed

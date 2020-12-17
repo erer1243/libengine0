@@ -10,7 +10,7 @@ void e0_setError(const char *fmt, ...);
 
 /**
  * Get the global error string.
- * @return [description]
+ * @return The global error string
  */
 const char *e0_getError();
 

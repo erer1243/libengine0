@@ -7,6 +7,7 @@
 #include "engine0/texture.h"
 #include "engine0/xmalloc.h"
 #include "engine0/error.h"
+#include "engine0/global_object_array.h"
 
 e0_texture *e0_createTexture(const char *path, GLenum format)
 {
@@ -40,18 +41,26 @@ e0_texture *e0_createTexture(const char *path, GLenum format)
 	e0_texture *t = xmalloc(sizeof(e0_texture));
 	t->id = id;
 
-	// Cleanup and return
+	// Cleanup image data
 	stbi_image_free(data);
+
+	// Append to global object array
+	append_object_GOA(t, TEXTURE);
+
 	return t;
 }
 
 void e0_destroyTexture(e0_texture *t)
 {
+	// Remove from global object array
+	remove_object_GOA(t);
+
 	free(t);
 }
 
 void e0_bindTexture(e0_texture *t, unsigned int number)
 {
+	if (!t) return;
 	glActiveTexture(GL_TEXTURE0 + number);
 	glBindTexture(GL_TEXTURE_2D, t->id);
 }

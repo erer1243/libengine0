@@ -103,7 +103,7 @@ int main()
 		mat4 projection;
 		glm_perspective(
 			65.0f * GLM_PI / 180.0f,
-			(float)window_width / (float)window_height,
+			(float)e0_globals.window_width / (float)e0_globals.window_height,
 			0.1f,
 			100.0f,
 			projection
@@ -130,15 +130,29 @@ int main()
 
 		// Model matrix
 		mat4 model = GLM_MAT4_IDENTITY_INIT;
-		glm_rotate(model, seconds, (vec3){1.0, 0.5, 0.25});
+		glm_rotate(
+			// Destination mat4
+			model,
+			// Radians
+			seconds,
+			// Axis multipliers
+			(vec3){
+				// x
+				1.0,
+				// y
+				0.5,
+				// z
+				0.25
+			}
+		);
 		e0_setu_mat4(s, "model", model);
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		e0_loopWindow();
+		e0_draw();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	e0_destroyMesh(m);
-	e0_destroyShader(s);
+	// e0_destroyMesh(m);
+	// e0_destroyShader(s);
 	e0_terminate();
 }

@@ -4,6 +4,7 @@
 
 #include "engine0/mesh.h"
 #include "engine0/xmalloc.h"
+#include "engine0/global_object_array.h"
 
 static void create_vaps(e0_VAP *vaps, size_t n_vaps)
 {
@@ -56,6 +57,9 @@ e0_mesh *e0_createMeshEBO(GLfloat *vertices,
 
 	create_vaps(vaps, n_vaps);
 
+	// Append to global object array
+	append_object_GOA(m, MESH);
+
 	return m;
 }
 
@@ -84,6 +88,9 @@ e0_mesh *e0_createMeshNoEBO(GLfloat *vertices,
 
 	create_vaps(vaps, n_vaps);
 
+	// Append to global object array
+	append_object_GOA(m, MESH);
+
 	return m;
 }
 
@@ -98,6 +105,9 @@ void e0_destroyMesh(e0_mesh *m)
 	glDeleteBuffers(1, &m->VBO);
 	if (m->have_ebo)
 		glDeleteBuffers(1, &m->EBO);
+
+	// Remove from global object array
+	remove_object_GOA(m);
 
 	free(m);
 }
